@@ -1,6 +1,6 @@
 # SPEC 02 — Salida rápida de la pen
 
-> **Estado:** Aprovado
+> **Estado:** Implementado
 > **Depende de:** SPEC 01
 > **Fecha:** 2026-09-17
 > **Objetivo:** Reducir los tiempos de salida escalonada de la pen para que pinky, inky y clyde salgan en el primer segundo y medio de partida en intervalos de 0.5 s.
