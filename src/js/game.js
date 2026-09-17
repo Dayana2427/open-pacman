@@ -44,7 +44,7 @@ function createGame() {
       kind: g.kind,
       state: g.kind === 'blinky' ? 'active' : 'pen',
     } ) ),
-    releaseTimer: 0, // frames desde el inicio/reset, controla la salida de la pen
+    releaseTimer: 0, // frames desde el inicio/reset (60 fps → 90 frames = 1.5 s)
   };
 }
 
