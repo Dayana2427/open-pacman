@@ -49,7 +49,7 @@ function createGame() {
       releaseAt: g.releaseAt,
       state: g.kind === 'blinky' ? 'active' : 'pen',
     } ) ),
-    releaseTimer: 0, // frames desde el inicio/reset (60 fps → 90 frames = 1.5 s)
+    releaseTimer: 0, // frames desde el inicio/reset (60 fps → 90 frames = 1.5 s, el último en salir)
   };
 }
 
