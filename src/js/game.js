@@ -42,7 +42,9 @@ function createGame() {
       dir: 'up',
       speed: GHOST_SPEED,
       kind: g.kind,
+      state: g.kind === 'blinky' ? 'active' : 'pen',
     } ) ),
+    releaseTimer: 0, // frames desde el inicio/reset, controla la salida de la pen
   };
 }
 
