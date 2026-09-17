@@ -42,6 +42,7 @@ function createGame() {
       dir: 'up',
       speed: GHOST_SPEED,
       kind: g.kind,
+      releaseAt: g.releaseAt,
       state: g.kind === 'blinky' ? 'active' : 'pen',
     } ) ),
     releaseTimer: 0, // frames desde el inicio/reset (60 fps → 90 frames = 1.5 s)
@@ -143,7 +144,36 @@ function decideGhost( game, g ) {
   }
 }
 
+// Movimiento dentro de la pen: el fantasma espera su releaseAt y luego sube
+// hacia la puerta; si no puede subir, se desplaza a la columna 13 (centro de
+// la puerta) y sigue subiendo hasta la fila 11, donde pasa a 'active'.
+function movePenGhost( game, g ) {
+  if ( game.releaseTimer < g.releaseAt ) return;
+  const grid = game.grid;
+
+  if ( aligned( g.x ) && aligned( g.y ) ) {
+    g.x = Math.round( g.x );
+    g.y = Math.round( g.y );
+    if ( g.y <= 11 ) {
+      g.state = 'active';
+      g.dir = 'up'; // decideGhost elegira rumbo en el proximo cruce
+      return;
+    }
+    if ( canMove( grid, g.x, g.y, 'up', 'ghost' ) ) g.dir = 'up';
+    else if ( g.x > 13 ) g.dir = 'left';
+    else g.dir = 'right';
+  }
+
+  const d = DIRS[ g.dir ];
+  g.x += d.x * g.speed;
+  g.y += d.y * g.speed;
+}
+
 function moveGhost( game, g ) {
+  if ( g.state === 'pen' ) {
+    movePenGhost( game, g );
+    return;
+  }
   const grid = game.grid;
   const width = grid[ 0 ].length;
 
@@ -178,6 +208,7 @@ function collides( a, b ) {
 }
 
 function update( game ) {
+  game.releaseTimer++;
   movePacman( game );
   game.ghosts.forEach( ( g ) => moveGhost( game, g ) );
 
