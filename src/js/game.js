@@ -231,7 +231,9 @@ function resetPositions( game ) {
     g.x = GHOST_STARTS[ i ].x;
     g.y = GHOST_STARTS[ i ].y;
     g.dir = 'up';
+    g.state = GHOST_STARTS[ i ].kind === 'blinky' ? 'active' : 'pen';
   } );
+  game.releaseTimer = 0;
 }
 
 function collides( a, b ) {
