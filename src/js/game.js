@@ -249,7 +249,10 @@ function resetPositions( game ) {
     g.y = GHOST_STARTS[ i ].y;
     g.dir = 'up';
     g.state = GHOST_STARTS[ i ].kind === 'blinky' ? 'active' : 'pen';
+    g.frightened = false;
   } );
+  game.powerTimer = 0;
+  game.frightenedChain = 0;
   game.releaseTimer = 0;
 }
 
@@ -272,8 +275,19 @@ function update( game ) {
     }
   }
 
-  for ( const g of game.ghosts ) {
-    if ( collides( game.pacman, g ) ) {
+  for ( let i = 0; i < game.ghosts.length; i++ ) {
+    const g = game.ghosts[ i ];
+    if ( !collides( game.pacman, g ) ) continue;
+    if ( g.frightened ) {
+      // Comer fantasma: cadena 200/400/800/1600 y vuelta a la pen.
+      game.score += Math.min( 1600, 200 << game.frightenedChain );
+      game.frightenedChain++;
+      g.x = GHOST_STARTS[ i ].x;
+      g.y = GHOST_STARTS[ i ].y;
+      g.dir = 'up';
+      g.state = 'pen';
+      g.frightened = false;
+    } else {
       game.lives--;
       if ( game.lives <= 0 ) {
         game.state = 'lost';
