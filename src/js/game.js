@@ -12,6 +12,7 @@ const OPPOSITE = { left: 'right', right: 'left', up: 'down', down: 'up' };
 
 const PACMAN_SPEED = 0.125; // 1/8 celda/frame -> alinea cada 8 frames
 const GHOST_SPEED = 0.1;    // 1/10 celda/frame
+const FRIGHTENED_SPEED = 0.05; // mitad de GHOST_SPEED durante el modo asustado
 
 // Esquina inferior-izquierda del laberinto a la que huye Clyde cuando
 // Pac-Man se le acerca (distancia Manhattan < 8).
@@ -169,14 +170,19 @@ function decideGhost( game, g ) {
   const choices = options.length ? options : [ '' + OPPOSITE[ g.dir ] ];
 
   // Elegir la direccion que minimiza la distancia Manhattan al objetivo.
+  // Asustado: huir de Pac-Man, MAXIMIZANDO la distancia hacia el.
   // El orden de DIRS (left, right, up, down) resuelve los empates.
   const target = ghostTarget( game, g );
+  const px = Math.round( game.pacman.x );
+  const py = Math.round( game.pacman.y );
   let best = choices[ 0 ];
-  let bestDist = Infinity;
+  let bestDist = g.frightened ? -Infinity : Infinity;
   for ( const dir of choices ) {
     const d = DIRS[ dir ];
-    const dist = Math.abs( g.x + d.x - target.x ) + Math.abs( g.y + d.y - target.y );
-    if ( dist < bestDist ) {
+    const distPac = Math.abs( g.x + d.x - px ) + Math.abs( g.y + d.y - py );
+    const dist = g.frightened ? distPac : Math.abs( g.x + d.x - target.x ) + Math.abs( g.y + d.y - target.y );
+    const mejor = g.frightened ? dist > bestDist : dist < bestDist;
+    if ( mejor ) {
       bestDist = dist;
       best = dir;
     }
@@ -225,8 +231,10 @@ function moveGhost( game, g ) {
   }
 
   const d = DIRS[ g.dir ];
-  g.x += d.x * g.speed;
-  g.y += d.y * g.speed;
+  // Asustado y activo: mitad de velocidad.
+  const speed = g.frightened && g.state === 'active' ? FRIGHTENED_SPEED : g.speed;
+  g.x += d.x * speed;
+  g.y += d.y * speed;
   wrapTunnel( g, width );
 }
 
