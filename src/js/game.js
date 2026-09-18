@@ -112,10 +112,12 @@ function movePacman( game ) {
       game.dotsRemaining--;
     }
     // Comer power pellet: activa modo asustado (sin puntos por si mismo).
+    // Se asustan todos, incluidos los de la pen.
     if ( grid[ p.y ][ p.x ] === 4 ) {
       grid[ p.y ][ p.x ] = 0;
       game.dotsRemaining--;
       game.powerTimer = 360;
+      game.ghosts.forEach( ( g ) => { g.frightened = true; } );
     }
     // Si no puede seguir, se detiene en la celda.
     if ( !canMove( grid, p.x, p.y, p.dir, 'pacman' ) ) return;
