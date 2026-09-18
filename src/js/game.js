@@ -254,6 +254,16 @@ function update( game ) {
   movePacman( game );
   game.ghosts.forEach( ( g ) => moveGhost( game, g ) );
 
+  // Temporizador del modo asustado: al expirar se apagan las banderas y
+  // la cadena de puntos vuelve a empezar.
+  if ( game.powerTimer > 0 ) {
+    game.powerTimer--;
+    if ( game.powerTimer === 0 ) {
+      game.frightenedChain = 0;
+      game.ghosts.forEach( ( g ) => { g.frightened = false; } );
+    }
+  }
+
   for ( const g of game.ghosts ) {
     if ( collides( game.pacman, g ) ) {
       game.lives--;
