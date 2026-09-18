@@ -25,7 +25,7 @@ function createGame() {
   grid[ PACMAN_START.y ][ PACMAN_START.x ] = 0;
 
   let dots = 0;
-  for ( const row of grid ) for ( const v of row ) if ( v === 2 ) dots++;
+  for ( const row of grid ) for ( const v of row ) if ( v === 2 || v === 4 ) dots++;
 
   return {
     state: 'start',
@@ -33,6 +33,8 @@ function createGame() {
     lives: 3,
     dotsRemaining: dots,
     grid,
+    powerTimer: 0,       // frames restantes de modo asustado (360 = 6 s)
+    frightenedChain: 0,  // fantasmas comidos en el modo asustado actual
     pacman: {
       x: PACMAN_START.x,
       y: PACMAN_START.y,
@@ -48,6 +50,7 @@ function createGame() {
       kind: g.kind,
       releaseAt: g.releaseAt,
       state: g.kind === 'blinky' ? 'active' : 'pen',
+      frightened: false,
     } ) ),
     releaseTimer: 0, // frames desde el inicio/reset (60 fps → 90 frames = 1.5 s, el último en salir)
   };
