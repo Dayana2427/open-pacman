@@ -70,11 +70,18 @@ function drawDots( ctx, grid ) {
   ctx.fillStyle = DOT_COLOR;
   for ( let y = 0; y < grid.length; y++ ) {
     for ( let x = 0; x < grid[ 0 ].length; x++ ) {
-      if ( grid[ y ][ x ] !== 2 ) continue;
-      const { cx, cy } = cellCenter( x, y );
-      ctx.beginPath();
-      ctx.arc( cx, cy, 2.5, 0, Math.PI * 2 );
-      ctx.fill();
+      if ( grid[ y ][ x ] === 2 ) {
+        const { cx, cy } = cellCenter( x, y );
+        ctx.beginPath();
+        ctx.arc( cx, cy, 2.5, 0, Math.PI * 2 );
+        ctx.fill();
+      } else if ( grid[ y ][ x ] === 4 ) {
+        // power pellet: circulo grande
+        const { cx, cy } = cellCenter( x, y );
+        ctx.beginPath();
+        ctx.arc( cx, cy, 6, 0, Math.PI * 2 );
+        ctx.fill();
+      }
     }
   }
 }
@@ -150,6 +157,18 @@ const GHOST_COLORS = {
   inky: '#00ffff',   // cian
   clyde: '#ffb852',  // naranja
 };
+const GHOST_FRIGHTENED = '#2121de';  // azul oscuro del modo asustado
+const GHOST_BLINK = '#f0f0f0';       // parpadeo blanco al agotarse el modo
+
+// Color del fantasma: azul asustado (con parpadeo blanco en los ultimos
+// 2 s del modo, alternando cada 10 frames) o su color propio.
+function ghostColor( game, g, frame ) {
+  if ( !g.frightened ) return GHOST_COLORS[ g.kind ] || '#ff0000';
+  if ( game.powerTimer <= 120 && Math.floor( frame / 10 ) % 2 === 0 ) {
+    return GHOST_BLINK;
+  }
+  return GHOST_FRIGHTENED;
+}
 
 function draw( ctx, game, frame ) {
   const grid = game.grid;
@@ -163,7 +182,7 @@ function draw( ctx, game, frame ) {
   drawDoor( ctx, grid );
   drawDots( ctx, grid );
   drawPacman( ctx, game.pacman, frame );
-  game.ghosts.forEach( ( g ) => drawGhost( ctx, g, GHOST_COLORS[ g.kind ] || '#ff0000' ) );
+  game.ghosts.forEach( ( g ) => drawGhost( ctx, g, ghostColor( game, g, frame ) ) );
   drawHUD( ctx, game, W );
 }
 
